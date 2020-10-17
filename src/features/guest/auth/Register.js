@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -13,6 +13,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link as RouterLink } from 'react-router-dom';
 import Copyright from '../../../components/Copyright';
+import { validateInputFields } from '../../../utils/validation';
+import { api } from '../../../utils/apiHelper';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,6 +39,40 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
     const classes = useStyles();
 
+    // Form Handling
+    const validationRules = {
+        email: [{ type: 'email' }],
+        password: [{ type: 'required' }],
+    };
+    const initialValues = {
+        email: '',
+        password: '',
+    };
+    const [values, setValues] = useState(initialValues);
+    const [errors, setErrors] = useState({});
+
+    function handleInputChange(e) {
+        setValues({ ...values, [e.target.name]: e.target.value });
+    }
+
+    async function handleRegister(e) {
+        e.preventDefault();
+
+        const [hasErrors, errors] = validateInputFields(
+            values,
+            validationRules
+        );
+
+        if (hasErrors) {
+            setErrors(errors);
+            return;
+        }
+
+        const data = await api('register')('create', values);
+
+        console.log(data);
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <div className={classes.paper}>
@@ -46,18 +82,31 @@ export default function SignUp() {
                 <Typography component="h1" variant="h5">
                     Register
                 </Typography>
-                <form className={classes.form} noValidate>
+                <form
+                    className={classes.form}
+                    noValidate
+                    onSubmit={handleRegister}
+                >
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 autoComplete="fname"
-                                name="firstName"
                                 variant="outlined"
                                 required
                                 fullWidth
                                 id="firstName"
                                 label="First Name"
                                 autoFocus
+                                // Two-way binding
+                                name="fName"
+                                value={values.fName}
+                                onChange={handleInputChange}
+                                // Error Handling
+                                {...{
+                                    error: !!errors.fName,
+                                    helperText:
+                                        errors.fName && errors.fName.join(' '),
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -67,8 +116,17 @@ export default function SignUp() {
                                 fullWidth
                                 id="lastName"
                                 label="Last Name"
-                                name="lastName"
                                 autoComplete="lname"
+                                // Two-way binding
+                                name="lName"
+                                value={values.lName}
+                                onChange={handleInputChange}
+                                // Error Handling
+                                {...{
+                                    error: !!errors.lName,
+                                    helperText:
+                                        errors.lName && errors.lName.join(' '),
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -78,8 +136,17 @@ export default function SignUp() {
                                 fullWidth
                                 id="email"
                                 label="Email Address"
-                                name="email"
                                 autoComplete="email"
+                                // Two-way binding
+                                name="email"
+                                value={values.email}
+                                onChange={handleInputChange}
+                                // Error Handling
+                                {...{
+                                    error: !!errors.email,
+                                    helperText:
+                                        errors.email && errors.email.join(' '),
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -87,19 +154,40 @@ export default function SignUp() {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                name="password"
                                 label="Password"
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
+                                // Two-way binding
+                                name="password"
+                                value={values.password}
+                                onChange={handleInputChange}
+                                // Error Handling
+                                {...{
+                                    error: !!errors.password,
+                                    helperText:
+                                        errors.password &&
+                                        errors.password.join(' '),
+                                }}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <FormControlLabel
                                 control={
                                     <Checkbox
-                                        value="allowExtraEmails"
+                                        value="agree"
                                         color="primary"
+                                        // Two-way binding
+                                        name="agree"
+                                        checked={values.agree}
+                                        onChange={handleInputChange}
+                                        // Error Handling
+                                        {...{
+                                            error: !!errors.agree,
+                                            helperText:
+                                                errors.agree &&
+                                                errors.agree.join(' '),
+                                        }}
                                     />
                                 }
                                 label={
