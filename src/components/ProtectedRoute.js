@@ -11,7 +11,7 @@ export default function ProtectedRoute(props) {
             clearTimeout(timeout.current);
         }
         if (!isLoggedIn) {
-            timeout.current = setTimeout(() => navigate('../login'), 1000);
+            timeout.current = setTimeout(() => navigate('/login'), 1000);
         }
     }, [isLoggedIn, navigate]);
 
