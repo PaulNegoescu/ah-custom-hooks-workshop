@@ -2,8 +2,6 @@
 
 ## by Paul Negoescu
 
----
-
 This repo serves as the living demo for the workshop held at PeakIT 003.
 
 ## Installation
