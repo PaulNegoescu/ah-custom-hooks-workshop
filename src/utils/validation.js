@@ -64,7 +64,7 @@ function validateInputFields(values, validationRules) {
             }
         }
     }
-    return [hasErrors, errors];
+    return { hasErrors, errors };
 }
 
 export { ValidationError, validateInputFields };

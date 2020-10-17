@@ -48,15 +48,6 @@ export default class AddQuestion extends Component {
         console.log(data);
     };
 
-    /*
-        useEffect(() => {
-            //whatever
-        }, [])
-    */
-    componentDidMount() {
-        //whatever
-    }
-
     render() {
         const { inputValues } = this.state;
 

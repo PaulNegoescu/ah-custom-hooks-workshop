@@ -79,10 +79,7 @@ export default function SignUp() {
     function handleInputChange(e) {
         const newValues = { ...values, [e.target.name]: e.target.value };
         if (alreadyValidated.current) {
-            const [hasErrors, errors] = validateInputFields(
-                newValues,
-                validationRules
-            );
+            const { errors } = validateInputFields(newValues, validationRules);
 
             setErrors(errors);
         }
@@ -92,7 +89,7 @@ export default function SignUp() {
     async function handleRegister(e) {
         e.preventDefault();
 
-        const [hasErrors, errors] = validateInputFields(
+        const { hasErrors, errors } = validateInputFields(
             values,
             validationRules
         );

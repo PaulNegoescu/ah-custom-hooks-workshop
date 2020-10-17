@@ -56,7 +56,7 @@ export default function Login() {
     async function handleLogin(e) {
         e.preventDefault();
 
-        const [hasErrors, errors] = validateInputFields(
+        const { hasErrors, errors } = validateInputFields(
             values,
             validationRules
         );
