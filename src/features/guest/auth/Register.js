@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function SignUp() {
+export default function Register() {
     const classes = useStyles();
 
     // Form Handling
@@ -75,7 +75,11 @@ export default function SignUp() {
     const alreadyValidated = useRef(false);
 
     function handleInputChange(e) {
-        const newValues = { ...values, [e.target.name]: e.target.value };
+        const { name, value, type } = e.target;
+        const newVal =
+            type === 'checkbox' || type === 'radio' ? !values[name] : value;
+        const newValues = { ...values, [name]: newVal };
+
         if (alreadyValidated.current) {
             const { errors } = validateInputFields(newValues, validationRules);
 
@@ -211,7 +215,6 @@ export default function SignUp() {
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            value="agree"
                                             color="primary"
                                             // Two-way binding
                                             name="agree"
