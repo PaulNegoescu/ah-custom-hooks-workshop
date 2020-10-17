@@ -1,5 +1,6 @@
 const validators = {
-    required: (value) => value.trim() !== '' && value.trim() !== 'off',
+    required: (value) =>
+        value !== false && value.trim() !== '' && value.trim() !== 'off',
     email: (value) => /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(value),
     minLength: (value, length) => value.length >= length,
     maxLength: (value, length) => value.length <= length,
@@ -49,14 +50,6 @@ function validateInputFields(values, validationRules) {
                 );
             }
 
-            console.log({
-                type: rule.type,
-                value: values[field],
-                constraint: rule.constraint,
-                field,
-                validator: validators[rule.type],
-                output: validators[rule.type](values[field], rule.constraint),
-            });
             if (!validators[rule.type](values[field], rule.constraint)) {
                 const msg =
                     rule.message ||

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -15,6 +15,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import Copyright from '../../../components/Copyright';
 import { validateInputFields } from '../../../utils/validation';
 import { api } from '../../../utils/apiHelper';
+import { FormControl, FormHelperText } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -41,18 +42,51 @@ export default function SignUp() {
 
     // Form Handling
     const validationRules = {
+        fName: [
+            {
+                type: 'minLength',
+                constraint: 2,
+                message: 'Please enter at least 2 characters.',
+            },
+        ],
+        lName: [
+            {
+                type: 'minLength',
+                constraint: 2,
+                message: 'Please enter at least 2 characters.',
+            },
+        ],
         email: [{ type: 'email' }],
         password: [{ type: 'required' }],
+        agree: [
+            {
+                type: 'required',
+                message: 'You need to agree to the terms and conditions.',
+            },
+        ],
     };
     const initialValues = {
+        fName: '',
+        lName: '',
         email: '',
         password: '',
+        agree: false,
     };
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState({});
+    const alreadyValidated = useRef(false);
 
     function handleInputChange(e) {
-        setValues({ ...values, [e.target.name]: e.target.value });
+        const newValues = { ...values, [e.target.name]: e.target.value };
+        if (alreadyValidated.current) {
+            const [hasErrors, errors] = validateInputFields(
+                newValues,
+                validationRules
+            );
+
+            setErrors(errors);
+        }
+        setValues(newValues);
     }
 
     async function handleRegister(e) {
@@ -64,6 +98,7 @@ export default function SignUp() {
         );
 
         if (hasErrors) {
+            alreadyValidated.current = true;
             setErrors(errors);
             return;
         }
@@ -172,36 +207,39 @@ export default function SignUp() {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        value="agree"
-                                        color="primary"
-                                        // Two-way binding
-                                        name="agree"
-                                        checked={values.agree}
-                                        onChange={handleInputChange}
-                                        // Error Handling
-                                        {...{
-                                            error: !!errors.agree,
-                                            helperText:
-                                                errors.agree &&
-                                                errors.agree.join(' '),
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <>
-                                        I agree to the{' '}
-                                        <Link
-                                            to="/terms-and-conditions"
-                                            component={RouterLink}
-                                        >
-                                            terms and conditions
-                                        </Link>
-                                    </>
-                                }
-                            />
+                            <FormControl
+                                required
+                                // Error Handling
+                                error={!!errors.agree}
+                                className={classes.formControl}
+                            >
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            value="agree"
+                                            color="primary"
+                                            // Two-way binding
+                                            name="agree"
+                                            checked={values.agree}
+                                            onChange={handleInputChange}
+                                        />
+                                    }
+                                    label={
+                                        <>
+                                            I agree to the{' '}
+                                            <Link
+                                                to="/terms-and-conditions"
+                                                component={RouterLink}
+                                            >
+                                                terms and conditions
+                                            </Link>
+                                        </>
+                                    }
+                                />
+                                <FormHelperText>
+                                    {errors.agree && errors.agree.join(' ')}
+                                </FormHelperText>
+                            </FormControl>
                         </Grid>
                     </Grid>
                     <Button

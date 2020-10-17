@@ -43,7 +43,7 @@ function api(endpoint, serializer = JSON.stringify) {
             ...config[type],
             body: body && serializer(body),
         };
-        debugger;
+
         return fetch(
             `${apiBaseUrl}/${endpoint}${entityId ?? `/${entityId}`}`,
             options
