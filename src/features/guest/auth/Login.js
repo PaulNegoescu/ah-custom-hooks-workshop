@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -9,8 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link as RouterLink } from 'react-router-dom';
-import { validateInputFields } from '../../../utils/validation';
 import { api } from '../../../utils/apiHelper';
+import useForm from '../../../hooks/useForm';
+import { AuthContext } from './authContext';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -32,41 +33,34 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const validationRules = {
+    email: [{ type: 'email' }],
+    password: [{ type: 'required' }],
+};
+const initialValues = {
+    email: '',
+    password: '',
+};
+
 export default function Login() {
     const classes = useStyles();
 
     // Form Handling
-    const validationRules = {
-        email: [{ type: 'email' }],
-        password: [{ type: 'required' }],
-    };
-    const initialValues = {
-        email: '',
-        password: '',
-    };
-    const [values, setValues] = useState(initialValues);
-    const [errors, setErrors] = useState({});
+    const [values, errors, bindInput, isFormValid] = useForm(
+        initialValues,
+        validationRules
+    );
 
-    function handleInputChange(e) {
-        setValues({ ...values, [e.target.name]: e.target.value });
-    }
+    const { setAuthValues } = useContext(AuthContext);
 
     async function handleLogin(e) {
         e.preventDefault();
 
-        const { hasErrors, errors } = validateInputFields(
-            values,
-            validationRules
-        );
-
-        if (hasErrors) {
-            setErrors(errors);
-            return;
+        if (isFormValid()) {
+            const data = await api('login')('create', values);
+            setAuthValues(data.accessToken, values.email);
+            console.log(data);
         }
-
-        const data = await api('login')('create', values);
-
-        console.log(data);
     }
 
     return (
@@ -93,9 +87,7 @@ export default function Login() {
                         autoComplete="email"
                         autoFocus
                         // Two-way binding
-                        name="email"
-                        value={values.email}
-                        onChange={handleInputChange}
+                        {...bindInput('email')}
                         // Error Handling
                         {...{
                             error: !!errors.email,
@@ -112,9 +104,7 @@ export default function Login() {
                         id="password"
                         autoComplete="current-password"
                         // Two-way binding
-                        name="password"
-                        value={values.password}
-                        onChange={handleInputChange}
+                        {...bindInput('password')}
                         // Error Handling
                         {...{
                             error: !!errors.password,

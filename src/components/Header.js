@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 const links = [
     { title: 'Home', url: '/' },
+    { title: 'Admin', url: 'admin' },
     { title: 'Feedback', url: '/feedback' },
 ];
 

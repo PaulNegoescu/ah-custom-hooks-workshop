@@ -8,7 +8,6 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 
 import NotFound from '../components/404/404';
-import AddQuestion from '../features/trivia/AddQuestion';
 import { Login, Register } from '../features/guest/auth';
 import Hero from '../features/guest/home/Hero';
 import Home from '../features/guest/home/Home';
@@ -37,17 +36,10 @@ export default function GuestLayoyt() {
                     <Grid item xs={12} md={mdSize}>
                         <Routes>
                             <Route path="/" element={<Home />} />
-                            <Route
-                                path="questions/add"
-                                element={<AddQuestion />}
-                            />
                             <Route path="login" element={<Login />} />
                             <Route path="register" element={<Register />} />
                             <Route path="feedback" element={<Feedback />} />
-                            <Route
-                                path="*"
-                                element={<NotFound parent="admin" />}
-                            />
+                            <Route path="*" element={<NotFound />} />
                         </Routes>
                     </Grid>
                     <Routes>

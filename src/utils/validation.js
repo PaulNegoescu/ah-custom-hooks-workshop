@@ -1,6 +1,6 @@
 const validators = {
     required: (value) =>
-        value !== false && value.trim() !== '' && value.trim() !== 'off',
+        (typeof value !== 'boolean' || value !== false) && value?.trim() !== '',
     email: (value) => /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(value),
     minLength: (value, length) => value.length >= length,
     maxLength: (value, length) => value.length <= length,

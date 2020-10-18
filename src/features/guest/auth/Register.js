@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -11,9 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link as RouterLink } from 'react-router-dom';
-import { validateInputFields } from '../../../utils/validation';
 import { api } from '../../../utils/apiHelper';
 import { FormControl, FormHelperText } from '@material-ui/core';
+import useForm from '../../../hooks/useForm';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -35,76 +35,55 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const validationRules = {
+    fName: [
+        {
+            type: 'minLength',
+            constraint: 2,
+            message: 'Please enter at least 2 characters.',
+        },
+    ],
+    lName: [
+        {
+            type: 'minLength',
+            constraint: 2,
+            message: 'Please enter at least 2 characters.',
+        },
+    ],
+    email: [{ type: 'email' }],
+    password: [{ type: 'required' }],
+    agree: [
+        {
+            type: 'required',
+            message: 'You need to agree to the terms and conditions.',
+        },
+    ],
+};
+const initialValues = {
+    fName: '',
+    lName: '',
+    email: '',
+    password: '',
+    agree: false,
+};
+
 export default function Register() {
     const classes = useStyles();
 
     // Form Handling
-    const validationRules = {
-        fName: [
-            {
-                type: 'minLength',
-                constraint: 2,
-                message: 'Please enter at least 2 characters.',
-            },
-        ],
-        lName: [
-            {
-                type: 'minLength',
-                constraint: 2,
-                message: 'Please enter at least 2 characters.',
-            },
-        ],
-        email: [{ type: 'email' }],
-        password: [{ type: 'required' }],
-        agree: [
-            {
-                type: 'required',
-                message: 'You need to agree to the terms and conditions.',
-            },
-        ],
-    };
-    const initialValues = {
-        fName: '',
-        lName: '',
-        email: '',
-        password: '',
-        agree: false,
-    };
-    const [values, setValues] = useState(initialValues);
-    const [errors, setErrors] = useState({});
-    const alreadyValidated = useRef(false);
-
-    function handleInputChange(e) {
-        const { name, value, type } = e.target;
-        const newVal =
-            type === 'checkbox' || type === 'radio' ? !values[name] : value;
-        const newValues = { ...values, [name]: newVal };
-
-        if (alreadyValidated.current) {
-            const { errors } = validateInputFields(newValues, validationRules);
-
-            setErrors(errors);
-        }
-        setValues(newValues);
-    }
+    const [values, errors, bindInput, isFormValid] = useForm(
+        initialValues,
+        validationRules
+    );
 
     async function handleRegister(e) {
         e.preventDefault();
 
-        const { hasErrors, errors } = validateInputFields(
-            values,
-            validationRules
-        );
+        if (isFormValid()) {
+            const data = await api('register')('create', values);
 
-        if (hasErrors) {
-            alreadyValidated.current = true;
-            setErrors(errors);
-            return;
+            console.log(data);
         }
-
-        const data = await api('register')('create', values);
-
-        console.log(data);
     }
 
     return (
@@ -132,9 +111,7 @@ export default function Register() {
                                 label="First Name"
                                 autoFocus
                                 // Two-way binding
-                                name="fName"
-                                value={values.fName}
-                                onChange={handleInputChange}
+                                {...bindInput('fName')}
                                 // Error Handling
                                 {...{
                                     error: !!errors.fName,
@@ -152,9 +129,7 @@ export default function Register() {
                                 label="Last Name"
                                 autoComplete="lname"
                                 // Two-way binding
-                                name="lName"
-                                value={values.lName}
-                                onChange={handleInputChange}
+                                {...bindInput('lName')}
                                 // Error Handling
                                 {...{
                                     error: !!errors.lName,
@@ -172,9 +147,7 @@ export default function Register() {
                                 label="Email Address"
                                 autoComplete="email"
                                 // Two-way binding
-                                name="email"
-                                value={values.email}
-                                onChange={handleInputChange}
+                                {...bindInput('email')}
                                 // Error Handling
                                 {...{
                                     error: !!errors.email,
@@ -193,9 +166,7 @@ export default function Register() {
                                 id="password"
                                 autoComplete="current-password"
                                 // Two-way binding
-                                name="password"
-                                value={values.password}
-                                onChange={handleInputChange}
+                                {...bindInput('password')}
                                 // Error Handling
                                 {...{
                                     error: !!errors.password,
@@ -217,9 +188,7 @@ export default function Register() {
                                         <Checkbox
                                             color="primary"
                                             // Two-way binding
-                                            name="agree"
-                                            checked={values.agree}
-                                            onChange={handleInputChange}
+                                            {...bindInput('agree', 'checked')}
                                         />
                                     }
                                     label={
