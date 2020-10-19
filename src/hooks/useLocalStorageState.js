@@ -6,10 +6,11 @@ export default function useLocalStorageState(key, initialValue) {
     );
 
     function updateValue(newVal) {
-        if (newVal === undefined || newVal === null) {
+        if (newVal !== undefined && newVal !== null) {
+            window.localStorage.setItem(key, JSON.stringify(newVal));
+        } else {
             window.localStorage.removeItem(key);
         }
-        window.localStorage.setItem(key, JSON.stringify(newVal));
         setValue(newVal);
     }
 
