@@ -4,6 +4,18 @@
 
 This repo serves as the living demo for the workshop held at PeakIT 003.
 
+## You've finished the workshop already?
+
+```
+git switch workshop-end
+```
+
+Stay in touch and stay curious!
+
+---
+
+If none of this made sense, continue reading:
+
 ## Installation
 
 ### Prerequisites
